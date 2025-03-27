@@ -1,0 +1,18 @@
+<resources>
+    <string name="MainScreen_Description">Click to demo page.</string>
+    <string name="MainScreen_Description_Assignment">DemoActivity to showcase the functionality of the CurrencyListFragment</string>
+
+
+    <string name="FunctionalButton_Clear">Clear</string>
+    CurrencyListFragment.
+    <string name="FunctionalButton_Fetch">Fetch</string>
+    <string name="FunctionalButton_Crypto">Crypto</string>
+    <string name="FunctionalButton_Fiat">Fiat</string>
+    <string name="FunctionalButton_All">All</string>
+
+    <string name="ErrorState_Empty">Nothing here yet.\nPlease try something different.\nMaybe click Load Button?</string>
+    <string name="ErrorState_MatchFailed_Prefix">No results for </string>
+    <string name="ErrorState_MatchFailed_Suffix">.\nPlease try again.</string>
+
+
+</resources>
