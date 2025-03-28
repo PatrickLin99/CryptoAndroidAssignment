@@ -27,7 +27,7 @@ git clone https://github.com/PatrickLin99/CryptoAndroidAssignment.git
 ## Screenshot
 <p align="center">
   <img src="https://i.imgur.com/WqAKJ20.png" width="24%"/>
-  <img src="https://i.imgur.com/dJzh2Dj.png" width="24%"/>
-  <img src="https://i.imgur.com/ojaLlis.png" width="24%"/>
-  <img src="https://i.imgur.com/vnuaIyL.png" width="24%"/>
+  <img src="https://i.imgur.com/Vig7BOp.png" width="24%"/>
+  <img src="https://i.imgur.com/Ti2z4Or.png" width="24%"/>
+  <img src="https://i.imgur.com/ejXfMG8.png" width="24%"/>
 </p>
