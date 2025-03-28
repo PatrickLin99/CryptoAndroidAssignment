@@ -13,7 +13,9 @@ import com.example.search.presentation.model.ViewInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -31,8 +33,8 @@ class DemoViewModel(
     private val _viewInfo: MutableStateFlow<ViewInfo> = MutableStateFlow(ViewInfo())
     val viewInfo = _viewInfo.asStateFlow()
 
-    private val _keyword: MutableStateFlow<String> = MutableStateFlow("")
-    val keyword = _keyword.asStateFlow()
+    private val _keyword: MutableSharedFlow<String> = MutableSharedFlow()
+    val keyword = _keyword.asSharedFlow()
 
     private val currencyType = MutableStateFlow(CurrencyFilterType.ALL)
     @OptIn(ExperimentalCoroutinesApi::class)
