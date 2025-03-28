@@ -25,7 +25,9 @@ git clone https://github.com/PatrickLin99/CryptoAndroidAssignment.git
 * Use Cases: Tests core business logic functions.
 
 ## Screenshot
-[Imgur](https://i.imgur.com/WqAKJ20.png)
-[Imgur](https://i.imgur.com/dJzh2Dj.png)
-[Imgur](https://i.imgur.com/ojaLlis.png)
-[Imgur](https://i.imgur.com/vnuaIyL.png)
+<p align="center">
+  <img src="https://i.imgur.com/WqAKJ20.png" width="24%"/>
+  <img src="https://i.imgur.com/dJzh2Dj.png" width="24%"/>
+  <img src="https://i.imgur.com/ojaLlis.png" width="24%"/>
+  <img src="https://i.imgur.com/vnuaIyL.png" width="24%"/>
+</p>
