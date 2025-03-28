@@ -2,7 +2,7 @@ package com.example.cryptoandroidtest
 
 import android.app.Application
 import com.example.data.di.dataModule
-import com.example.search.di.searchModule
+import com.example.search.di.demoModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -12,7 +12,7 @@ class CryptoAndroidAssignment: Application() {
 
         startKoin {
             androidContext(applicationContext)
-            modules(listOf(searchModule, dataModule))
+            modules(listOf(demoModule, dataModule))
         }
     }
 }
