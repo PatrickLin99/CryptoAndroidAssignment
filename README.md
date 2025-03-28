@@ -5,7 +5,7 @@ Additionally, create a DemoActivity to showcase the functionality of theCurrency
 
 ---
 
-## 📥 Installation & Setup
+## Installation & Setup
 ### Clone the repository:
 git clone https://github.com/PatrickLin99/CryptoAndroidAssignment.git
 
