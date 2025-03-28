@@ -2,8 +2,11 @@ package com.example.search.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.repository.CurrencyRepository
 import com.example.data.CurrencyDataProvider
+import com.example.search.domanin.useCase.DeleteAllLocalCurrencyUseCase
+import com.example.search.domanin.useCase.GetCurrencyByTypeUseCase
+import com.example.search.domanin.useCase.GetCurrencyMatchedUseCase
+import com.example.search.domanin.useCase.SetLocalCurrencyUseCase
 import com.example.search.presentation.model.CurrencyFilterType
 import com.example.search.presentation.model.ErrorState
 import com.example.search.presentation.model.ViewInfo
@@ -14,13 +17,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DemoViewModel(
-    private val currencyRepository: CurrencyRepository
+    private val setLocalCurrencyUseCase: SetLocalCurrencyUseCase,
+    private val getCurrencyByTypeUseCase : GetCurrencyByTypeUseCase,
+    private val deleteAllLocalCurrencyUseCase: DeleteAllLocalCurrencyUseCase,
+    private val getCurrencyMatchedUseCase: GetCurrencyMatchedUseCase,
 ): ViewModel() {
 
     private val _viewInfo: MutableStateFlow<ViewInfo> = MutableStateFlow(ViewInfo())
@@ -29,14 +34,10 @@ class DemoViewModel(
     private val _keyword: MutableStateFlow<String> = MutableStateFlow("")
     val keyword = _keyword.asStateFlow()
 
-    val currencyType = MutableStateFlow(CurrencyFilterType.ALL)
+    private val currencyType = MutableStateFlow(CurrencyFilterType.ALL)
     @OptIn(ExperimentalCoroutinesApi::class)
     val currencies = this.currencyType.flatMapLatest { type ->
-        when (type) {
-            CurrencyFilterType.ALL -> currencyRepository.getAllCurrencies()
-            CurrencyFilterType.Crypto -> currencyRepository.getCrypto()
-            CurrencyFilterType.Fiat -> currencyRepository.getFiat()
-        }
+        getCurrencyByTypeUseCase.invoke(type)
     }
 
     init {
@@ -47,9 +48,7 @@ class DemoViewModel(
     fun setLocalCurrencies() {
         viewModelScope.launch(Dispatchers.IO) {
             _viewInfo.emit(viewInfo.value.copy(isLoading = true))
-            CurrencyDataProvider.currencies.map {
-                currencyRepository.setLocalCurrency(it)
-            }
+            setLocalCurrencyUseCase.invoke(CurrencyDataProvider.currencies)
             this@DemoViewModel.currencyType.emit(CurrencyFilterType.ALL)
         }
     }
@@ -78,7 +77,7 @@ class DemoViewModel(
     }
 
     fun updateKeywords(keyword: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _viewInfo.emit(viewInfo.value.copy(isCommit = null))
             _keyword.emit(keyword)
         }
@@ -86,16 +85,14 @@ class DemoViewModel(
 
     fun clearLocalCurrencies() {
         viewModelScope.launch(Dispatchers.IO) {
-            currencyRepository.deleteAllCurrency()
+            deleteAllLocalCurrencyUseCase.invoke()
         }
     }
 
     fun filterCryptoCurrency() {
         viewModelScope.launch(Dispatchers.IO) {
             if (viewInfo.value.currencies.none { it.code == null }) {
-                CurrencyDataProvider.currencies.filter { it.code == null }.map {
-                    currencyRepository.setLocalCurrency(it)
-                }
+                setLocalCurrencyUseCase.invoke(CurrencyDataProvider.currencies.filter { it.code == null })
             }
             this@DemoViewModel.currencyType.emit(CurrencyFilterType.Crypto)
         }
@@ -104,15 +101,13 @@ class DemoViewModel(
     fun filterFiatCurrency() {
         viewModelScope.launch(Dispatchers.IO) {
             if (viewInfo.value.currencies.none { it.code != null }) {
-                CurrencyDataProvider.currencies.filter { it.code != null }.map {
-                    currencyRepository.setLocalCurrency(it)
-                }
+                setLocalCurrencyUseCase.invoke(CurrencyDataProvider.currencies.filter { it.code != null })
             }
             this@DemoViewModel.currencyType.emit(CurrencyFilterType.Fiat)
         }
     }
 
-    fun initCurrenciesObserver() {
+    private fun initCurrenciesObserver() {
         viewModelScope.launch(Dispatchers.IO) {
             _viewInfo.emit(viewInfo.value.copy(isLoading = true))
             this@DemoViewModel.currencies.stateIn(this).collect {
@@ -131,16 +126,14 @@ class DemoViewModel(
     @OptIn(FlowPreview::class)
     fun observeInputCondition() {
         viewModelScope.launch(Dispatchers.IO) {
-            keyword.debounce(500L).distinctUntilChanged().filter { it.isNotEmpty() }.collect { keywords ->
+            keyword.debounce(500L).distinctUntilChanged().collect { keywords ->
                 val previewRes = viewInfo.value.currencies.filter {
-                    it.id.contains(keywords, true)
-                        || it.name.contains(keywords, true)
-                        || it.code?.contains(keywords, true) == true
+                    getCurrencyMatchedUseCase.invoke(it, keywords)
                 }
                 if (previewRes.isNotEmpty()) {
                     _viewInfo.emit(viewInfo.value.copy(searchResult = previewRes, isError = null))
                 } else if (keywords.isEmpty()) {
-                    _viewInfo.emit(viewInfo.value.copy(searchResult = emptyList(), isError = null))
+                    _viewInfo.emit(viewInfo.value.copy(searchResult = emptyList(), isError = null, isCommit = null))
                 } else if (previewRes.isEmpty()) {
                     _viewInfo.emit(viewInfo.value.copy(searchResult = emptyList(), isError = ErrorState.NOT_MATCHED))
                 }
