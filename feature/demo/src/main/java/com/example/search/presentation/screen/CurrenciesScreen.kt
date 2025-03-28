@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.data.model.CurrencyInfo
+import com.example.search.presentation.model.CurrencyScreenListener
 import com.example.search.presentation.model.ErrorState
 import com.example.search.presentation.model.FunctionalIcon
 import com.example.search.presentation.model.ViewInfo
@@ -61,15 +62,7 @@ import com.example.search.presentation.model.ViewInfo
 fun CurrenciesScreen(
     viewInfoState: State<ViewInfo>,
     keyword: State<String>,
-    onKeywordsChangeListener: (String) -> Unit,
-    onClickBackListener: () -> Unit,
-    onClickCommitSearchListener: () -> Unit,
-    onClickClearKeywordListener: () -> Unit,
-    onClickClearLocalCurrenciesListener: () -> Unit,
-    onClickSetLocalCurrenciesListener: () -> Unit,
-    onFetchLocalCurrencyListener: () -> Unit,
-    onFilterCryptoCurrency: () -> Unit,
-    onFilterFiatCurrency: () -> Unit,
+    currencyScreenListener: CurrencyScreenListener,
 ) {
     val viewInfo = viewInfoState.value
     val showLoading = viewInfo.isLoading
@@ -79,10 +72,10 @@ fun CurrenciesScreen(
     Scaffold(
         topBar = {
             SearchTextFieldItem(
-                onKeywordsChangeListener,
-                onClickBackListener,
-                onClickCommitSearchListener,
-                onClickClearKeywordListener
+                currencyScreenListener.onKeywordsChangeListener,
+                currencyScreenListener.onClickBackListener,
+                currencyScreenListener.onClickCommitSearchListener,
+                currencyScreenListener.onClickClearKeywordListener
             )
         },
         content = { innerPadding ->
@@ -137,11 +130,11 @@ fun CurrenciesScreen(
         },
         bottomBar = {
             FunctionalIconFooter(
-                onClickClearLocalCurrenciesListener,
-                onClickSetLocalCurrenciesListener,
-                onFetchLocalCurrencyListener,
-                onFilterCryptoCurrency,
-                onFilterFiatCurrency
+                onClickClearLocalCurrenciesListener = currencyScreenListener.onClickClearLocalCurrenciesListener,
+                onClickSetLocalCurrenciesListener = currencyScreenListener.onClickSetLocalCurrenciesListener,
+                onFetchLocalCurrencyListener = currencyScreenListener.onFetchLocalCurrencyListener,
+                onFilterCryptoCurrency = currencyScreenListener.onFilterCryptoCurrency,
+                onFilterFiatCurrency = currencyScreenListener.onFilterFiatCurrency
             )
         }
     )
@@ -376,7 +369,7 @@ fun LoadingComponent() {
 fun PreviewSearchCurrencyScreen() {
     val viewInfo = remember { mutableStateOf(ViewInfo()) }
     val keyword = remember { mutableStateOf("") }
-    CurrenciesScreen(viewInfo, keyword, {}, {}, {}, {}, {}, {}, {}, {}, {})
+    CurrenciesScreen(viewInfo, keyword, CurrencyScreenListener({}, {}, {}, {}, {}, {}, {}, {}, {}))
 }
 
 @Preview

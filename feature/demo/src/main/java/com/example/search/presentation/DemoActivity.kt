@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.search.presentation.model.CurrencyScreenListener
 import com.example.search.presentation.viewModel.DemoViewModel
 import com.example.search.presentation.screen.CurrenciesScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -11,6 +12,17 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class DemoActivity: ComponentActivity() {
 
     private val vm by viewModel<DemoViewModel>()
+    private val currencyScreenListener = CurrencyScreenListener(
+        onKeywordsChangeListener = ::onKeywordsChangeListener,
+        onClickBackListener = { this.finish() },
+        onClickCommitSearchListener = ::onCommitSearchListener,
+        onClickClearKeywordListener = ::onClickClearKeywordListener,
+        onClickClearLocalCurrenciesListener = ::onClickClearLocalCurrenciesListener,
+        onClickSetLocalCurrenciesListener = ::onClickSetLocalCurrenciesListener,
+        onFetchLocalCurrencyListener = ::onFetchLocalCurrencyListener,
+        onFilterCryptoCurrency = ::onFilterCryptoCurrency,
+        onFilterFiatCurrency = ::onFilterFiatCurrency,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,15 +30,7 @@ class DemoActivity: ComponentActivity() {
             CurrenciesScreen(
                 viewInfoState = vm.viewInfo.collectAsStateWithLifecycle(),
                 keyword = vm.keyword.collectAsStateWithLifecycle(""),
-                onKeywordsChangeListener = ::onKeywordsChangeListener,
-                onClickBackListener = { this.finish() },
-                onClickCommitSearchListener = ::onCommitSearchListener,
-                ::onClickClearKeywordListener,
-                ::onClickClearLocalCurrenciesListener,
-                ::onClickSetLocalCurrenciesListener,
-                ::onFetchLocalCurrencyListener,
-                ::onFilterCryptoCurrency,
-                ::onFilterFiatCurrency,
+                currencyScreenListener = currencyScreenListener,
             )
         }
     }
