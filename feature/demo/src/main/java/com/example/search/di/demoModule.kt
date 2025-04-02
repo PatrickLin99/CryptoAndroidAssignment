@@ -15,8 +15,8 @@ val demoModule = module {
     }
 
     single { CurrencyRepository(get()) }
-    single { GetCurrencyByTypeUseCase(get()) }
-    single { SetLocalCurrencyUseCase(get()) }
-    single { DeleteAllLocalCurrencyUseCase(get()) }
-    single { GetCurrencyMatchedUseCase() }
+    factory { GetCurrencyByTypeUseCase(get()) }
+    factory { SetLocalCurrencyUseCase(get()) }
+    factory { DeleteAllLocalCurrencyUseCase(get()) }
+    factory { GetCurrencyMatchedUseCase() }
 }
